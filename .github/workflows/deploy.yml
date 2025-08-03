@@ -41,9 +41,9 @@ jobs:
             fi
 
             # Apply all manifests
-            kubectl apply -f webapp-deployment.yaml
-            kubectl apply -f webapp-service.yaml
-            kubectl apply -f web-ingress.yaml
+            kubectl apply -f webapp-deployment.yml
+            kubectl apply -f webapp-service.yml
+            kubectl apply -f web-ingress.yml
 
             # Force rollout restart to reload pods with the latest image
             kubectl rollout restart deployment webapp-deployment
