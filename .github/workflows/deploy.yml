@@ -40,6 +40,8 @@ jobs:
               cd k8s-manifests && git pull origin main && cd ..
             fi
 
+            cd k8s-manifests
+
             # Apply all manifests
             kubectl apply -f webapp-deployment.yml
             kubectl apply -f webapp-service.yml
