@@ -33,9 +33,17 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ec2-user
+            echo "Checking if Git is installed..."
+            if ! command -v git &> /dev/null
+            then
+              echo "Git is not installed. Installing..."
+              sudo yum install -y git
+            else
+              echo "Git is already installed:"
+              git --version
+            fi
 
-            sudo yum install -y git
+            cd /home/ec2-user
 
             if [ ! -d "k8s-manifests" ]; then
               git clone https://github.com/denukedissanayake/k8s-manifests.git
