@@ -1,0 +1,32 @@
+name: Build and Push Frontend Docker Image to DockerHub
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  IMAGE_NAME: lugx-webapp
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Read version from VERSION file
+        id: vars
+        run: |
+          VERSION=$(cat VERSION | tr -d ' \n')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Docker login
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $DOCKERHUB_USERNAME --password-stdin
+
+      - name: Build and Push Docker image
+        run: |
+          docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:${{ steps.vars.outputs.version }} .
+          docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:${{ steps.vars.outputs.version }}
