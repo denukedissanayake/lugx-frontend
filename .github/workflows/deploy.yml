@@ -38,7 +38,7 @@ jobs:
             sudo yum install -y git
 
             if [ ! -d "k8s-manifests" ]; then
-              git clone git@github.com:denukedissanayake/k8s-manifests.git
+              git clone https://github.com/denukedissanayake/k8s-manifests.git
             else
               cd k8s-manifests && git pull origin main && cd ..
             fi
