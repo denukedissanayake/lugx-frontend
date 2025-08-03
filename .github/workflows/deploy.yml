@@ -10,23 +10,40 @@ env:
   IMAGE_NAME: lugx-webapp
 
 jobs:
-  build-and-push:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v3
 
-      - name: Read version from VERSION file
-        id: vars
-        run: |
-          VERSION=$(cat VERSION | tr -d ' \n')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Docker login
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u $DOCKERHUB_USERNAME --password-stdin
+      - name: Build Docker image
+        run: docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:latest .
 
-      - name: Build and Push Docker image
-        run: |
-          docker build -t $DOCKERHUB_USERNAME/$IMAGE_NAME:${{ steps.vars.outputs.version }} .
-          docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:${{ steps.vars.outputs.version }}
+      - name: Push image to DockerHub
+        run: docker push $DOCKERHUB_USERNAME/$IMAGE_NAME:latest
+
+      - name: Deploy to EC2 Kubernetes
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user
+            if [ ! -d "k8s-manifests" ]; then
+              git clone git@github.com:denukedissanayake/k8s-manifests.git
+            else
+              cd k8s-manifests && git pull origin main && cd ..
+            fi
+
+            # Apply all manifests
+            kubectl apply -f webapp-deployment.yaml
+            kubectl apply -f webapp-service.yaml
+            kubectl apply -f web-ingress.yaml
+
+            # Force rollout restart to reload pods with the latest image
+            kubectl rollout restart deployment webapp-deployment
