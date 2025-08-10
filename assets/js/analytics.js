@@ -1,6 +1,6 @@
 function sendEvent(eventType, elementId) {
   console.log("event captured", eventType, elementId);
-  fetch("http://lugx.service/analytics", {
+  fetch("http://lugx.service:8080/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
