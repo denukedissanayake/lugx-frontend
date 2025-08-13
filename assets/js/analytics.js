@@ -1,38 +1,53 @@
-function sendEvent(eventType, elementId) {
-  console.log("event captured", eventType, elementId);
+function sendEvent(event) {
   fetch("http://lugx.service:8080/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      event_type: eventType,
-      element_id: elementId,
-    }),
+    body: JSON.stringify(event),
   }).catch(console.error);
 }
 
 document.addEventListener("click", (e) => {
-  const id = e.target.id || e.target.className || "unknown";
-  sendEvent("click", id);
+  const id = e.target.id || e.target.className || e.target.tagName || "unknown";
+  let event = {
+    event_type: "click",
+    element_id: id,
+  };
+  sendEvent(event);
 });
 
-let scrollTimeout;
-window.addEventListener("scroll", () => {
-  clearTimeout(scrollTimeout);
-  scrollTimeout = setTimeout(() => sendEvent("scroll", "page"), 200);
+window.addEventListener("load", () => {
+  let event = {
+    event_type: "page_view",
+    element_id: window.location.pathname,
+  };
+  sendEvent(event);
 });
-
-window.addEventListener("load", () =>
-  sendEvent("page_view", window.location.pathname)
-);
 
 const startTime = Date.now();
 window.addEventListener("beforeunload", () => {
   const timeSpent = Math.floor((Date.now() - startTime) / 1000);
-  sendEvent("time_on_page", timeSpent.toString());
+  let event = {
+    event_type: "time_on_page",
+    element_id: timeSpent.toString(),
+  };
+  sendEvent(event);
 });
 
-sendEvent("user_info", navigator.userAgent);
+sendEvent({
+  event_type: "user_info",
+  element_id: navigator.userAgent,
+});
 
 window.addEventListener("popstate", () => {
-  sendEvent("navigation", window.location.pathname);
+  let event = {
+    event_type: "navigation",
+    element_id: window.location.pathname,
+  };
+  sendEvent(event);
 });
+
+// let scrollTimeout;
+// window.addEventListener("scroll", () => {
+//   clearTimeout(scrollTimeout);
+//   scrollTimeout = setTimeout(() => sendEvent("scroll", "page"), 200);
+// });
