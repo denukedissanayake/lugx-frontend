@@ -1,4 +1,5 @@
 function sendEvent(event) {
+  console.log(event);
   fetch("http://lugx.service:8080/analytics", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -21,7 +22,7 @@ document.addEventListener("click", (e) => {
     event_type: "click",
     page: getPage(window.location.pathname),
     time_spent: "",
-    element_id: id.toString,
+    element_id: id.toString(),
     user_info: "",
   };
   sendEvent(event);
