@@ -21,7 +21,7 @@ document.addEventListener("click", (e) => {
     event_type: "click",
     page: getPage(window.location.pathname),
     time_spent: "",
-    element_id: id,
+    element_id: id.toString,
     user_info: "",
   };
   sendEvent(event);
@@ -32,7 +32,7 @@ window.addEventListener("load", () => {
     event_type: "page_view",
     page: getPage(window.location.pathname),
     time_spent: "",
-    element_id: 0,
+    element_id: "",
     user_info: "",
   };
   sendEvent(event);
@@ -45,7 +45,7 @@ window.addEventListener("beforeunload", () => {
     event_type: "time_on_page",
     page: getPage(window.location.pathname),
     time_spent: timeSpent.toString(),
-    element_id: 0,
+    element_id: "",
     user_info: "",
   };
   sendEvent(event);
@@ -55,7 +55,7 @@ sendEvent({
   event_type: "user_info",
   page: "",
   time_spent: "",
-  element_id: 0,
+  element_id: "",
   user_info: navigator.userAgent,
 });
 
