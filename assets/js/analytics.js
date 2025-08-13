@@ -22,7 +22,7 @@ document.addEventListener("click", (e) => {
     event_type: "click",
     page: getPage(window.location.pathname),
     time_spent: "",
-    element_id: id.toString(),
+    element_id: target.innerText?.trim() || target.href || id.toString(),
     user_info: "",
   };
   sendEvent(event);
