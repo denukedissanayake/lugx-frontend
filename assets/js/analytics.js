@@ -14,12 +14,12 @@ const getPage = (page) => {
 };
 
 document.addEventListener("click", (e) => {
-  const target = e.target.closest('[id], [class], button, a') || e.target;
+  const target = e.target.closest("[id], [class], button, a") || e.target;
   const id = target.id || target.className || target.tagName || "unknown";
 
   let event = {
     event_type: "click",
-    page: getPage(window.location.pathname),,
+    page: getPage(window.location.pathname),
     time_spent: "",
     element_id: id,
     user_info: "",
@@ -58,7 +58,6 @@ sendEvent({
   element_id: 0,
   user_info: navigator.userAgent,
 });
-
 
 // let previousPath = window.location.pathname;
 // window.addEventListener("popstate", () => {
