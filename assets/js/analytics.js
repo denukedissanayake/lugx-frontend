@@ -8,7 +8,7 @@ function sendEvent(event) {
 }
 
 const getPage = (page) => {
-  page
+  return page
     .split("/")
     .pop()
     .replace(/\.html$/, "");
