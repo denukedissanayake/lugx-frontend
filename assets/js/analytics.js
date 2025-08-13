@@ -6,11 +6,23 @@ function sendEvent(event) {
   }).catch(console.error);
 }
 
+const getPage = (page) => {
+  page
+    .split("/")
+    .pop()
+    .replace(/\.html$/, "");
+};
+
 document.addEventListener("click", (e) => {
-  const id = e.target.id || e.target.className || e.target.tagName || "unknown";
+  const target = e.target.closest('[id], [class], button, a') || e.target;
+  const id = target.id || target.className || target.tagName || "unknown";
+
   let event = {
     event_type: "click",
+    page: getPage(window.location.pathname),,
+    time_spent: "",
     element_id: id,
+    user_info: "",
   };
   sendEvent(event);
 });
@@ -18,7 +30,10 @@ document.addEventListener("click", (e) => {
 window.addEventListener("load", () => {
   let event = {
     event_type: "page_view",
-    element_id: window.location.pathname,
+    page: getPage(window.location.pathname),
+    time_spent: "",
+    element_id: 0,
+    user_info: "",
   };
   sendEvent(event);
 });
@@ -28,23 +43,36 @@ window.addEventListener("beforeunload", () => {
   const timeSpent = Math.floor((Date.now() - startTime) / 1000);
   let event = {
     event_type: "time_on_page",
-    element_id: timeSpent.toString(),
+    page: getPage(window.location.pathname),
+    time_spent: timeSpent.toString(),
+    element_id: 0,
+    user_info: "",
   };
   sendEvent(event);
 });
 
 sendEvent({
   event_type: "user_info",
-  element_id: navigator.userAgent,
+  page: "",
+  time_spent: "",
+  element_id: 0,
+  user_info: navigator.userAgent,
 });
 
-window.addEventListener("popstate", () => {
-  let event = {
-    event_type: "navigation",
-    element_id: window.location.pathname,
-  };
-  sendEvent(event);
-});
+
+// let previousPath = window.location.pathname;
+// window.addEventListener("popstate", () => {
+//   const newPath = window.location.pathname;
+
+//   const event = {
+//     event_type: "navigation",
+//     from: previousPath,
+//     to: newPath,
+//   };
+
+//   sendEvent(event);
+//   previousPath = newPath;
+// });
 
 // let scrollTimeout;
 // window.addEventListener("scroll", () => {
